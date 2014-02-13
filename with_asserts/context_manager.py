@@ -18,11 +18,9 @@ class ElementIDNotFound(HTMLNotPresent):
 class AssertHTMLContext(object):
     """Context manager for AssertHTMLMixin.assertHTML"""
 
-    def __init__(self, response, test_case, selector, element_id,
-                 status_code, msg):
-        self.response = response
+    def __init__(self, parsed_template, test_case, selector, element_id, msg):
+        self.parsed_template = parsed_template
         self.test_case = test_case
-        self.status_code = status_code
         self.element_id = element_id
         self.selector = selector
 

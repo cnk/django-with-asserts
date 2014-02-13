@@ -26,3 +26,16 @@ Links
  * Code: https://github.com/cnk/django-with-asserts
 
 
+Running tests
+-------------
+
+1. Clone the project
+2. Set up a virtual environment for your testing (`virtualenv env`) and activate it (`source env/bin/activate`)
+3. Install dependencies (`pip install django, lxml, cssselect`)
+4. Install this code into your virtual environment (`pip install -e path/to/django_with_asserts`)
+5. Set your PYTHONPATH to include the top level directory and the tests directory::
+
+    export PROJ_ROOT=<where your code is>
+    export PYTHONPATH=${PROJ_ROOT}/django-with-asserts:${PROJ_ROOT}/django-with-asserts/tests
+
+6. From within the tests directory, run `django-admin.py test --settings=project.settings`

@@ -18,8 +18,8 @@ class ElementIDNotFound(HTMLNotPresent):
 class AssertHTMLContext(object):
     """Context manager for AssertHTMLMixin.assertHTML"""
 
-    def __init__(self, parsed_template, test_case, selector, element_id, msg):
-        self.parsed_template = parsed_template
+    def __init__(self, rendered_template, test_case, selector, element_id, msg):
+        self.rendered_template = rendered_template
         self.test_case = test_case
         self.element_id = element_id
         self.selector = selector
@@ -28,13 +28,8 @@ class AssertHTMLContext(object):
         #raise self.failureException(msg)
 
     def __enter__(self):
-        # Similar to assertContains(), we verify the status code
-        self.test_case.assertEqual(self.response.status_code, self.status_code)
-
-        # TODO consider validating self.response['Content-Type']
-
-        # Parse the response as HTML
-        html = lxml.html.fromstring(self.response.content)
+        # Parse the  as HTML
+        html = lxml.html.fromstring(self.rendered_template)
         if self.selector is not None:
             # Use cssselect to filter the elements
             elements = html.cssselect(self.selector)

@@ -1,3 +1,4 @@
+from django.template.loader import render_to_string
 from django.test import TestCase
 from with_asserts.case import TestCase as HTMLTestCase
 from with_asserts.mixin import AssertHTMLMixin
@@ -7,46 +8,46 @@ import lxml.html
 
 class AssertHTMLMixinTest(TestCase, AssertHTMLMixin):
     def test_document(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp) as html:
+        with self.assertHTML(rendered) as html:
             self.assertIsInstance(html, lxml.html.HtmlElement)
             self.assertEqual('Selector Test', html.find('head/title').text)
 
     def test_selector_class(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp, '.product') as elems:
+        with self.assertHTML(rendered, '.product') as elems:
             self.assertEqual(2, len(elems))
             self.assertEqual('Subpage 3', elems[0].text)
             self.assertEqual('Subpage 4', elems[1].text)
 
     def test_destructuring(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp, '.product') as (li1, li2):
+        with self.assertHTML(rendered, '.product') as (li1, li2):
             self.assertEqual('Subpage 3', li1.text)
             self.assertEqual('Subpage 4', li2.text)
 
     def test_selector_id(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp, '#example-div') as (elem,):
+        with self.assertHTML(rendered, '#example-div') as (elem,):
             self.assertIsInstance(elem, lxml.html.HtmlElement)
 
             self.assertEqual('Example Div By ID', elem.text)
 
     def test_selector_attribute(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp, 'input[name="email"]') as (elem,):
+        with self.assertHTML(rendered, 'input[name="email"]') as (elem,):
             self.assertEqual('test@example.com', elem.value)
 
     def test_selector_not_present(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
         with self.assertRaises(AssertionError) as cm:
-            with self.assertHTML(resp, '.not-real'):
+            with self.assertHTML(rendered, '.not-real'):
                 # should not be executed
                 raise Exception()
 
@@ -56,16 +57,16 @@ class AssertHTMLMixinTest(TestCase, AssertHTMLMixin):
         )
 
     def test_element_id(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp, element_id='example-div') as elem:
+        with self.assertHTML(rendered, element_id='example-div') as elem:
             self.assertEqual('Example Div By ID', elem.text)
 
     def test_element_id_not_present(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
         with self.assertRaises(AssertionError) as cm:
-            with self.assertHTML(resp, element_id='not-real'):
+            with self.assertHTML(rendered, element_id='not-real'):
                 # should not be executed
                 raise Exception()
 
@@ -73,25 +74,6 @@ class AssertHTMLMixinTest(TestCase, AssertHTMLMixin):
             'Element with id, not-real, not present',
             str(cm.exception)
         )
-
-    def test_404_not_found(self):
-        resp = self.client.post('/404/')
-
-        with self.assertRaises(AssertionError):
-            # should through exception because of 404 status code
-            with self.assertHTML(resp):
-                # should not be executed (self.fail() would cause an
-                # AssertionError, which would confuse what we are testing
-                raise Exception()
-
-    def test_404_status_code(self):
-        resp = self.client.post('/404/')
-
-        with self.assertHTML(resp, status_code=404):
-            return
-
-        # should have returned by now
-        self.fail()
 
     # def test_expected_attrs(self):
     #     resp = self.client.get('/template/selectors/')
@@ -102,43 +84,27 @@ class AssertHTMLMixinTest(TestCase, AssertHTMLMixin):
 
 class AssertNotHTMLTest(TestCase, AssertHTMLMixin):
     def test_not_present(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        self.assertNotHTML(resp, '.not-real')
+        self.assertNotHTML(rendered, '.not-real')
 
     def test_present(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
         with self.assertRaises(AssertionError):
-            self.assertNotHTML(resp, '.product')
-
-    def test_404_not_found(self):
-        # still expect a valid status
-        resp = self.client.post('/404/')
-
-        with self.assertRaises(AssertionError) as cm:
-            # should through exception because of 404 status code
-            self.assertNotHTML(resp, '.product')
-
-        self.assertEqual('404 != 200', str(cm.exception))
+            self.assertNotHTML(rendered, '.product')
 
 
 class HTMLTestCaseTest(HTMLTestCase):
-    def test_django_subclass(self):
-        resp = self.client.get('/template/selectors/')
-
-        # would not be present if not Django
-        self.assertContains(resp, 'Selector Test')
-
     def test_assert_not_html(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        self.assertNotHTML(resp, '.not-real')
+        self.assertNotHTML(rendered, '.not-real')
 
     def test_assert_html(self):
-        resp = self.client.get('/template/selectors/')
+        rendered = render_to_string('tests/selectors.html')
 
-        with self.assertHTML(resp) as html:
+        with self.assertHTML(rendered) as html:
             self.assertIsInstance(html, lxml.html.HtmlElement)
             self.assertEqual('Selector Test', html.find('head/title').text)
 

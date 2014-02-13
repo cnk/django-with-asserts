@@ -5,14 +5,14 @@ __all__ = ['AssertHTMLMixin']
 
 
 class AssertHTMLMixin(object):
-    def assertHTML(self, parsed_template,
+    def assertHTML(self, rendered_template,
                    selector=None, 
                    element_id=None,
                    expected=None,
                    msg=None):
 
         context = AssertHTMLContext(
-            parsed_template,
+            rendered_template,
             test_case=self,
             selector=selector,
             element_id=element_id,
